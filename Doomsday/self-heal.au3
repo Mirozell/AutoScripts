@@ -9,10 +9,11 @@ HotKeySet( "{esc}","QuitHandler" )
 
 $windows = WinList("Doomsday_Steam")
 $windowcount = $windows[0][0]
+$mainwindow = $windows[1][1]
 ConsoleWrite(_NowTime() & " Found active windows: " & $windowcount & @CRLF)
 $statusWindow = SplashTextOn ( "Doomsday Heal Script", "Starting...", 250, 120, 50, 50 )
 
-global $healsize = GetHealSize($windowcount-1) + 0 ; 86
+global $healsize = GetHealSize($windowcount-1); + 87
 global $capWait = False
 global $elixerTab = False
 
@@ -34,8 +35,8 @@ EndIf
 While True
 
    $healed = Heal()
-   Helps()
-   $waited = WaitAndCollect()
+   $waited = WaitAndHelps()
+   Collect()
 
    $totalhealed += $healed
    $elapsed = _Max(_DateDiff("n", $starttime, _NowCalc()), 1)
@@ -50,8 +51,7 @@ Func GetHealSize($helpcount)
 EndFunc
 
 Func Heal()
-   $window = $windows[1][1]
-   ActivateWindow($window)
+   ActivateWindow($mainwindow)
 
    ;hospital heal popover
    UpdateStatus("Entering hospital")
@@ -94,25 +94,38 @@ Func Heal()
    return $healed
 EndFunc
 
-Func Helps()
-   For $i = 2 To $windowcount
-		local $window = $windows[$i][1]
-		ActivateWindow($window)
-		MouseClick("left", $helpbtn[0], $helpbtn[1])
-		Sleep(100)
-   Next
+Func WaitAndHelps()
+   ActivateWindow($mainwindow)
+   UpdateStatus("Waiting and helping...")
+   $waitstart = _NowCalc()
+   $lasthelp = "1970/01/01 00:00:00"
+
+   While True
+
+	  ;wait
+	  $complete = CheckForHealComplete($waitbar, 25)
+	  If $complete Then
+		 ConsoleWrite(_NowTime() & " Detected heal finished..." & @CRLF)
+		 $waited=_DateDiff("s", $waitstart, _NowCalc())
+		 return $waited
+	  EndIf
+
+	  ; help at interval
+	  If _DateDiff("s", $lasthelp, _NowCalc()) > 10 Then
+		 ConsoleWrite(_NowTime() & " Helping..." & @CRLF)
+		 For $i = 2 To $windowcount
+			local $window = $windows[$i][1]
+			ActivateWindow($window)
+			MouseClick("left", $helpbtn[0], $helpbtn[1])
+			Sleep(40) ; help click won't register if this is too short
+		 Next
+	  EndIf
+
+   WEnd
 EndFunc
 
-Func WaitAndCollect()
-   $window = $windows[1][1]
-   ActivateWindow($window)
-
-   ;wait
-   UpdateStatus("Waiting...")
-   sleep(200)
-   Local $waitstart = _NowCalc()
-   WaitForHealComplete($waitbar, 35)
-   Local $waited=_DateDiff("s", $waitstart, _NowCalc())
+Func Collect()
+   ActivateWindow($mainwindow)
 
    ;collect
    UpdateStatus("Collecting")
@@ -120,22 +133,21 @@ Func WaitAndCollect()
    return $waited
 EndFunc
 
-Func WaitForHealComplete($target, $tolerance)
+Func CheckForHealComplete($target, $tolerance)
+   ActivateWindow($mainwindow)
+
    ;MouseMove($target[0], $target[1])
 
-   Do
-	  Sleep(200)
-	  Local $color = GetPixelHexColor($target[0], $target[1])
-	  If $color = "000000" Then
-		 ConsoleWrite("Failed color check: " & $color & @CRLF)
-		 exit 4
-	  EndIf
+   $color = GetPixelHexColor($target[0], $target[1])
+   If $color = "000000" Then
+	  ConsoleWrite("Failed to detect color. Expected: " & $target[1] & " Found: " & $color & @CRLF)
+	  exit 4
+   EndIf
 
-	  Local $diff = HexDiff($target[2], $color)
-	  ;ConsoleWrite(_NowCalc() & " Waiting for change: " & $target[0] & "," & $target[1] & " " & $target[2] & " Current: " & $color & " Diff: " & $diff & @CRLF)
-   Until $diff > $tolerance
+   $diff = HexDiff($target[2], $color)
+   ;ConsoleWrite(_NowTime() & " Waiting for change: " & $target[0] & "," & $target[1] & " " & $target[2] & " Current: " & $color & " Diff: " & $diff & @CRLF)
 
-   ConsoleWrite(_NowTime() & "     Complete. Target: " & $target[2] & " Current: " & $color & " Diff: " & $diff & @CRLF)
+   return $diff > $tolerance
 EndFunc
 
 Func ActivateWindow($hwnd)
