@@ -1,6 +1,5 @@
 #include <Date.au3>
 #include <Math.au3>
-#include <ScreenCapture.au3>
 #include "lib/BotLib.au3"
 #include "lib/PixelDiff.au3"
 
@@ -58,7 +57,7 @@ Func Heal()
    UpdateStatus("Entering hospital")
    $entered = MouseClick_Target($hospitalpopup, 35)
    If Not $entered Then
-	  ConsoleWrite(_NowTime() & " No entry" & @CRLF)
+	  ConsoleWrite(_NowTime() & " No entry.  Printing screen to clipboard for review" & @CRLF)
 	  Send("!{PRINTSCREEN}")
 	  exit 1
    EndIf
@@ -91,7 +90,6 @@ Func Heal()
 
    ;heal!
    UpdateStatus("Heal: " & $healed)
-   _ScreenCapture_Capture(@MyDocumentsDir & "\Autoit Scripts\Screencaps\Heal.jpg", 0, 0, 2560, 1440)
    MouseClick_Target($healbtn, 5)
    return $healed
 EndFunc
@@ -154,8 +152,6 @@ Func UpdateStatus($message)
    Local $elapsed = _Max(_DateDiff("n", $starttime, _NowCalc()), 1)
    Local $rate = Round($totalhealed/$elapsed, 0)
    ConsoleWrite(_NowTime() & " " & $message & @CRLF)
-   $filename = @MyDocumentsDir&"\Autoit Scripts\Screencaps\"&$message&".jpg"
-   _ScreenCapture_Capture($filename)
    Local $content = "Healed: " & $totalhealed & @CRLF _
    & "Heal size: " & $healsize & @CRLF _
    & $message & @CRLF _
