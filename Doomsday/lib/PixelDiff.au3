@@ -1,7 +1,6 @@
 #include-once
 
-Func GetPixelHexColor($x, $y)
-   $hwnd = WinGetTitle("[active]")
+Func GetPixelHexColor($x, $y, $hwnd = 0)
    $iColor = PixelGetColor($x, $y, $hwnd)
    return StringRight(Hex($iColor), 6)
 EndFunc

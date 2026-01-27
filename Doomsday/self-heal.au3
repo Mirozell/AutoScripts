@@ -119,8 +119,9 @@ Func WaitAndHelps()
 			MouseClick("left", $helpbtn[0], $helpbtn[1])
 			Sleep(40) ; help click won't register if this is too short
 		 Next
+		 $lasthelp = _NowCalc()
 	  EndIf
-
+	  sleep(100)
    WEnd
 EndFunc
 
@@ -134,11 +135,11 @@ Func Collect()
 EndFunc
 
 Func CheckForHealComplete($target, $tolerance)
-   ActivateWindow($mainwindow)
+   ;ActivateWindow($mainwindow)
 
    ;MouseMove($target[0], $target[1])
 
-   $color = GetPixelHexColor($target[0], $target[1])
+   $color = GetPixelHexColor($target[0], $target[1], $mainwindow)
    If $color = "000000" Then
 	  ConsoleWrite("Failed to detect color. Expected: " & $target[1] & " Found: " & $color & @CRLF)
 	  exit 4
