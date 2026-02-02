@@ -43,7 +43,7 @@ While True
    $rate = Round($totalhealed/$elapsed, 0)
    ConsoleWrite(_NowTime() & " Healed: " & $healed & " Total: " & $totalhealed & " Waited: " & $waited & " Rate: " & $rate & @CRLF)
 
-   Sleep(1000)
+   Sleep(300)
 Wend
 
 Func GetHealSize($helpcount)
