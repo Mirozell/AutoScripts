@@ -7,16 +7,16 @@ EndFunc
 
 ; does this even work right??
 Func PixelDiff($color1, $color2)
-   ConsoleWrite("Hex input: " & Hex($color1) & " " & Hex($color2) & @CRLF)
+   ;ConsoleWrite("Hex input: " & Hex($color1) & " " & Hex($color2) & @CRLF)
    $diff = _Max($color1, $color2) - _Min($color1, $color2)
    $hexdiff = Hex($diff)
-   ConsoleWrite("Diff: " & $diff & " Hex Diff: " & $hexdiff & @CRLF)
+   ;ConsoleWrite("Diff: " & $diff & " Hex Diff: " & $hexdiff & @CRLF)
 
    $r = StringMid($hexdiff, 3, 2)
    $g = StringMid($hexdiff, 5, 2)
    $b = StringMid($hexdiff, 7, 2)
 
-   ConsoleWrite("RGB Diffs: " & $r & " " & $g & " " & $b & @CRLF)
+   ;ConsoleWrite("RGB Diffs: " & $r & " " & $g & " " & $b & @CRLF)
 
    $result = Dec($r) + Dec($g) + Dec($b)
    ConsoleWrite("Sum Diffs: " & $result & @CRLF)
