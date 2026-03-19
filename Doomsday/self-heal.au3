@@ -13,9 +13,8 @@ $mainwindow = $windows[1][1]
 ConsoleWrite(_NowTime() & " Found active windows: " & $windowcount & @CRLF)
 $statusWindow = SplashTextOn ( "Doomsday Heal Script", "Starting...", 250, 120, 50, 50 )
 
-global $healsize = GetHealSize($windowcount-1); + 87
-global $capWait = False
-global $elixerTab = False
+global $healsize = 2700 ; GetHealSize($windowcount-1); + 87
+global $elixerTab = False; or True
 
 ; target = [x, y, hex color]
 global $hospitalpopup = [670, 590, "C38647"]
@@ -29,7 +28,7 @@ global $totalhealed = 0
 global $starttime = _NowCalc()
 
 If $elixerTab Then
-   $squadbox += 50
+   $squadbox[1] += 65
 EndIf
 
 While True
@@ -64,7 +63,7 @@ Func Heal()
 
    ;prevent elixer heal
    If $elixerTab Then
-	  MouseClick("left", 1200, 240)
+	  MouseClick("left", 1350, 240)
    EndIf
 
    ;zero out squads
@@ -74,6 +73,7 @@ Func Heal()
    ;set squads to heal
    UpdateStatus("Preparing squads")
    ClipPut("99999999")
+   MouseMove($squadbox[0], $squadbox[1])
    MouseClick_Target($squadbox, 10)
    Sleep ( 100 )
    $h = String($healsize)
@@ -111,7 +111,7 @@ Func WaitAndHelps()
 	  EndIf
 
 	  ; help at interval
-	  If _DateDiff("s", $lasthelp, _NowCalc()) > 10 Then
+	  If _DateDiff("s", $lasthelp, _NowCalc()) > 15 Then
 		 ConsoleWrite(_NowTime() & " Helping..." & @CRLF)
 		 For $i = 2 To $windowcount
 			local $window = $windows[$i][1]
