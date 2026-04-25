@@ -4,7 +4,7 @@
 
 Func Logger($msg, $v1=Null, $v2=Null, $v3=Null, $v4=Null, $v5=Null, $v6=Null, $v7=Null, $v8=Null)
 	$message = StringFormat($msg, $v1, $v2, $v3, $v4 ,$v5, $v6, $v7, $v8)
-	ConsoleWrite(_NowTime() & " " & $message & @CRLF)
+	ConsoleWrite(_NowTime() & "| " & $message & @CRLF)
 EndFunc
 
 ; target = [x, y, hexcolor]

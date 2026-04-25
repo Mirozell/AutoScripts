@@ -18,6 +18,7 @@ $statusWindow = SplashTextOn ( "Doomsday Farm Script", "Farming...", 200, 120, 5
 local $farmwindow = True
 local $squadsize = 0 ; 0 to send auto full squad
 local $wait = 1000*180 ;1000 * $squadsize / 100 * 20
+local $clicktargetwait = 3
 
 ; target = [x, y, hex color]
 local $shelterbtn = [34, 686, "8D714B"]
@@ -29,17 +30,14 @@ local $createbtn = [970, 261, "D69639"]
 local $squadbox = [1036, 105, "141311"]
 local $marchbtn = [943, 626, "E0A842"]
 
-;local $rssbtn = [550, 590]				; food
-;local $rsssearchbtn = [550, 480]		; food
-;local $rssbtn = [720, 590]	    		; wood
-;local $rsssearchbtn = [720, 480]		; wood
-;local $rssbtn = [880, 590]				; steel
-;local $rsssearchbtn = [880, 480]		; steel
-local $rssbtn = [1050, 590]				; oil
-local $rsssearchbtn = [1050, 480]		; oil
+; rss button x y, search button x y,
+local $farmfood = [550, 590, 550, 480]
+local $farmwood = [720, 590, 720, 480]
+local $farmsteel = [880, 590, 880, 480]
+local $farmoil = [1050, 590, 1050, 480]
+local $farms = [$farmsteel, $farmoil]
 
 local $starttime = _NowCalc()
-local $clicktargetwait = 3
 
 Logger("Starting %s farms. Squad size: %s Wait: %s", $windowcount, $squadsize, $wait)
 
@@ -51,7 +49,7 @@ While True
 		 ContinueLoop
 	  EndIf
 
-	  $err = Gather()
+	  $err = Gather($farms)
 	  If $err Then
 		 Logger($err)
 		 ContinueLoop
@@ -75,34 +73,39 @@ While True
    Sleep($wait)
 Wend
 
-Func SearchFarm()
-   MouseClick("left", $searchbtn[0], $searchbtn[1])
-
-   MouseClick("left", $rssbtn[0], $rssbtn[1])
-
-   MouseClick("left", $rsssearchbtn[0], $rsssearchbtn[1])
-   Sleep(2000)
-
-   MouseClick("left", $centerfarm[0], $centerfarm[1])
+Func PickOne($arr)
+   return $arr[Random(0, UBound($arr)-1, 1)]
 EndFunc
 
-Func Gather()
+Func Gather($farms)
    $tries = 0
    While $tries < 5
-	  SearchFarm()
+	  local $farmbtns = PickOne($farms)
+	  SearchFarm($farmbtns)
 	  ;MouseMove($gatherbtn[0]+2, $gatherbtn[1]+2)
 	  $clicked = MouseClick_Target($gatherbtn, 15, $clicktargetwait)
 	  If $clicked Then
 		 return ""
 	  EndIf
-	  tries += 1
+	  $tries += 1
    WEnd
 
    return "Failed to click gather"
 EndFunc
 
+Func SearchFarm($fbtns)
+   MouseClick("left", $searchbtn[0], $searchbtn[1])
+
+   MouseClick("left", $fbtns[0], $fbtns[1])
+
+   MouseClick("left", $fbtns[2], $fbtns[3])
+   Sleep(2000)
+
+   MouseClick("left", $centerfarm[0], $centerfarm[1])
+EndFunc
+
 Func IsSquadReady($hwnd)
-   MouseMove($emptysquadbox[0], $emptysquadbox[1])
+   ;MouseMove($emptysquadbox[0], $emptysquadbox[1])
    $c = GetPixelHexColor($emptysquadbox[0], $emptysquadbox[1], $hwnd)
    If HexDiff($emptysquadbox[2], $c) < 10 Then
 	  return True
@@ -161,18 +164,5 @@ Func ActivateWindow($hwnd)
 		ConsoleWriteError("Window not found")
 		Exit 1
 	EndIf
-EndFunc
-
-Func UpdateStatus($message)
-   Local $elapsed = _Max(_DateDiff("n", $starttime, _NowCalc()), 1)
-   Local $rate = Round($totalhealed/$elapsed, 0)
-   ConsoleWrite(_NowTime() & " " & $message & @CRLF)
-   Local $content = "Healed: " & $totalhealed & @CRLF _
-   & "Heal size: " & $healsize & @CRLF _
-   & $message & @CRLF _
-   & "Elapsed: " & $elapsed & " min" & @CRLF _
-   & "Rate: " & $rate & "/min"
-
-   ControlSetText ( $statusWindow, "", "[CLASSNN:Static1]", $content & @CRLF & "Press esc to exit...")
 EndFunc
 
