@@ -12,53 +12,67 @@ HotKeySet( "{esc}","QuitHandler" )
 
 $windows = WinList("Doomsday_Steam")
 $windowcount = $windows[0][0]
-$mainwindow = $windows[1][1]
-ConsoleWrite(_NowTime() & " Found active windows: " & $windowcount & @CRLF)
+
 $statusWindow = SplashTextOn ( "Doomsday Farm Script", "Farming...", 200, 120, 50, 50 )
 
-local $squadsize = 2000
-local $wait = 1000*20 ;1000 * $squadsize / 100 * 20
+local $farmwindow = True
+local $squadsize = 0 ; 0 to send auto full squad
+local $wait = 1000*180 ;1000 * $squadsize / 100 * 20
 
 ; target = [x, y, hex color]
-local $shelterbtn = [49, 1028, "93744F"]
-local $searchbtn = [72, 678, "FFF7E7"]
-local $centerfarm = [959, 543]
-local $gatherbtn = [1339, 773, "E1AB44"]
-local $createbtn = [1457, 368, "DC9F3F"]
-local $marchbtn = [1412, 940, "DFA842"]
-local $squadbox = [1551, 139, "141311"]
+local $shelterbtn = [34, 686, "8D714B"]
+local $searchbtn = [38, 455, "FDFBE9"]
+local $centerfarm = [641, 356]
+local $gatherbtn = [880, 507, "E7B54A"]
+local $emptysquadbox = [1212, 125, "EFC897"]
+local $createbtn = [970, 261, "D69639"]
+local $squadbox = [1036, 105, "141311"]
+local $marchbtn = [943, 626, "E0A842"]
 
-;local $rssbtn = [831, 920]				; food
-;local $rsssearchbtn = [816, 696]		; food
-local $rssbtn = [1075, 920]	    		; wood
-local $rsssearchbtn = [1064, 696]		; wood
-;local $rssbtn = [1324, 920]			; steel
-;local $rsssearchbtn = [1324, 696]		; steel
-;local $rssbtn = [1574, 920]			; oil
-;local $rsssearchbtn = [1574, 696]		; oil
+;local $rssbtn = [550, 590]				; food
+;local $rsssearchbtn = [550, 480]		; food
+;local $rssbtn = [720, 590]	    		; wood
+;local $rsssearchbtn = [720, 480]		; wood
+;local $rssbtn = [880, 590]				; steel
+;local $rsssearchbtn = [880, 480]		; steel
+local $rssbtn = [1050, 590]				; oil
+local $rsssearchbtn = [1050, 480]		; oil
 
 local $starttime = _NowCalc()
-local $squadcount = 0
-local $clicktargetwait = 5
+local $clicktargetwait = 3
 
-Logger("Starting farms. Squad size: %s Wait: %s", $squadsize, $wait)
+Logger("Starting %s farms. Squad size: %s Wait: %s", $windowcount, $squadsize, $wait)
 
 While True
-   ResetToRegionView($shelterbtn)
+   For $i=1 To $windowcount
+	  $hwnd = $windows[$i][1]
+	  $isReset = ResetToRegionView($hwnd, $shelterbtn)
+	  If Not $isReset Then
+		 ContinueLoop
+	  EndIf
 
-   SearchFarm()
+	  $err = Gather()
+	  If $err Then
+		 Logger($err)
+		 ContinueLoop
+	  EndIf
 
-   $sent = SendSquad()
-   If $sent Then
-	  $squadcount += 1
-	  Logger("count: %s", $squadcount)
-   Else
-	  Logger("Failed to send")
-   EndIf
+	  Sleep(500)
+	  $ready = IsSquadReady($hwnd)
+	  If Not $ready Then
+		 Logger("%s: No squad ready", $i)
+		 ResetToRegionView($hwnd, $shelterbtn)
+		 ContinueLoop
+	  EndIf
 
+	  $err = SendSquad()
+	  If $err Then
+		 Logger("%s: %s", $i, $msg)
+	  Else
+		 Logger("%s: squad dispatched", $i)
+	  EndIf
+   Next
    Sleep($wait)
-
-   $elapsed = _Max(_DateDiff("n", $starttime, _NowCalc()), 1)
 Wend
 
 Func SearchFarm()
@@ -72,34 +86,58 @@ Func SearchFarm()
    MouseClick("left", $centerfarm[0], $centerfarm[1])
 EndFunc
 
-Func SendSquad()
-   MouseMove($gatherbtn[0]+2, $gatherbtn[1]+2)
-   $clicked = MouseClick_Target($gatherbtn, 15, $clicktargetwait)
-   If Not ($clicked) Then
-	  return False
-   EndIf
+Func Gather()
+   $tries = 0
+   While $tries < 5
+	  SearchFarm()
+	  ;MouseMove($gatherbtn[0]+2, $gatherbtn[1]+2)
+	  $clicked = MouseClick_Target($gatherbtn, 15, $clicktargetwait)
+	  If $clicked Then
+		 return ""
+	  EndIf
+	  tries += 1
+   WEnd
 
-   $clicked = MouseClick_Target($createbtn, 5, $clicktargetwait)
-   If Not ($clicked) Then
-	  return False
-   EndIf
-
-   $clicked = MouseClick_Target($squadbox, 5, $clicktargetwait)
-   If Not ($clicked) Then
-	  return False
-   EndIf
-
-   Send(_StringRepeat("{Backspace}", 6))
-   Send(String($squadsize))
-
-   $clicked = MouseClick_Target($marchbtn, 5, $clicktargetwait)
-
-   return $clicked
+   return "Failed to click gather"
 EndFunc
 
-Func ResetToRegionView($btn, $interval=1000, $limit=10)
-   ActivateWindow($mainwindow)
-   $color = GetPixelHexColor($btn[0], $btn[1], $mainwindow)
+Func IsSquadReady($hwnd)
+   MouseMove($emptysquadbox[0], $emptysquadbox[1])
+   $c = GetPixelHexColor($emptysquadbox[0], $emptysquadbox[1], $hwnd)
+   If HexDiff($emptysquadbox[2], $c) < 10 Then
+	  return True
+   EndIf
+
+   return False
+EndFunc
+
+Func SendSquad()
+   $clicked = MouseClick_Target($createbtn, 5, $clicktargetwait)
+   If Not ($clicked) Then
+	  return "Failed to click create"
+   EndIf
+
+   If $squadsize > 0 Then
+	  $clicked = MouseClick_Target($squadbox, 5, $clicktargetwait)
+	  If Not ($clicked) Then
+		 return "Failed to click squad box"
+	  EndIf
+
+	  Send(_StringRepeat("{Backspace}", 6))
+	  Send(String($squadsize))
+   EndIf
+
+   $clicked = MouseClick_Target($marchbtn, 5, $clicktargetwait)
+   If Not ($clicked) Then
+	  return "Failed to click march"
+   EndIf
+
+   return ""
+EndFunc
+
+Func ResetToRegionView($hwnd, $btn, $interval=1000, $limit=10)
+   ActivateWindow($hwnd)
+   $color = GetPixelHexColor($btn[0], $btn[1], $hwnd)
    $count = 0
    While HexDiff($color, $btn[2]) > 0
 	  $count += 1
@@ -109,7 +147,7 @@ Func ResetToRegionView($btn, $interval=1000, $limit=10)
 
 	  MouseClick("left", $btn[0], $btn[1])
 	  Sleep($interval)
-	  $color = GetPixelHexColor($btn[0], $btn[1], $mainwindow)
+	  $color = GetPixelHexColor($btn[0], $btn[1], $hwnd)
    WEnd
 
    Return True
