@@ -30,7 +30,7 @@ Func MouseClick_Target($target, $tolerance=0, $timeout = 30)
    Until $clicked Or _NowCalc() > $timedout
 
    If Not $clicked Then
-	  Logger("Click Target: %s, %s Clicked: %s Expected: %s Actual: %s Diff: %s", $x, $y, $clicked, $expected, $actual,  $diff)
+	  ;Logger("Click Target: %s, %s Clicked: %s Expected: %s Actual: %s Diff: %s", $x, $y, $clicked, $expected, $actual,  $diff)
    EndIf
 
    return $clicked
