@@ -21,7 +21,7 @@ local $wait = 1000*180 ;1000 * $squadsize / 100 * 20
 local $clicktargetwait = 3
 
 ; target = [x, y, hex color]
-local $shelterbtn = [34, 686, "8D714B"]
+local $shelterbtn = [34, 686, "8D6F4B"]
 local $searchbtn = [38, 455, "FDFBE9"]
 local $centerfarm = [641, 356]
 local $gatherbtn = [880, 507, "E7B54A"]
@@ -46,12 +46,13 @@ While True
 	  $hwnd = $windows[$i][1]
 	  $isReset = ResetToRegionView($hwnd, $shelterbtn)
 	  If Not $isReset Then
+		 Logger("%s: Failed to reset to region", $i)
 		 ContinueLoop
 	  EndIf
 
 	  $err = Gather($farms)
 	  If $err Then
-		 Logger($err)
+		 Logger("%s: %s", $i, $err)
 		 ContinueLoop
 	  EndIf
 
@@ -65,7 +66,7 @@ While True
 
 	  $err = SendSquad()
 	  If $err Then
-		 Logger("%s: %s", $i, $msg)
+		 Logger("%s: %s", $i, $err)
 	  Else
 		 Logger("%s: squad dispatched", $i)
 	  EndIf
@@ -87,6 +88,7 @@ Func Gather($farms)
 	  If $clicked Then
 		 return ""
 	  EndIf
+	  Logger("%s: Retrying gather", $i)
 	  $tries += 1
    WEnd
 
