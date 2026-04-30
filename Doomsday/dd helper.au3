@@ -1,6 +1,6 @@
 #include <Date.au3>
 #include <Math.au3>
-#include <PixelDiff.au3>
+#include <lib/PixelDiff.au3>
 #include <ScreenCapture.au3>
 
 AutoItSetOption("MouseCoordMode", 2)
