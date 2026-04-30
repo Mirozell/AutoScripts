@@ -25,19 +25,24 @@ While 1=1
 
    For $i = 1 To $windowcount
 	  $window = $windows[$i][1]
+	  WinSetState($window, "", @SW_RESTORE)
 	  ActivateWindow($window)
 
 	  If $forceclick > 9 Then
 		 MouseClick("left", $helpbtn[0], $helpbtn[1])
+		 $forceclick = 0
 	  Else
 		 $clicked = MouseClick_Target($helpbtn, 10)
 		 If $clicked Then
+			Logger("%s: Helped", $i)
 			$forceclick = 0
 		 Else
 			$forceclick += 1
 		 EndIf
 	  EndIf
 	  Sleep($interval*1000)
+	  WinSetState($window, "", @SW_MINIMIZE )
+
    Next
 
    WinActivate($statusWindow)
