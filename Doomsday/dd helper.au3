@@ -3,6 +3,7 @@
 #include <lib/PixelDiff.au3>
 #include <lib/BotLib.au3>
 
+
 AutoItSetOption("MouseCoordMode", 2)
 AutoItSetOption("PixelCoordMode", 2)
 AutoItSetOption("MouseClickDownDelay", 30)
