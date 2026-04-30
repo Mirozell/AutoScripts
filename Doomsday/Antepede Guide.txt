@@ -1,0 +1,38 @@
+I want to generate an infographic based on my guide for a game event.
+Use portrait orientation
+Use clean style and a simple dark gradient background
+Sections should be clearly separated
+Text should be large and easy to read
+The listed examples should be arranged so each has a square placeholder image with the name underneath
+
+=== Antepede Guide to Maximize Points ===
+
+= Troop basic attacks are the only damage that matters =
+
+Start your rally with heroes that have strong skills for `Atk` or `Basic Attack DMG` in a rally
+- Riders: Felix*, Elena*, Chasey*, Daryl, Janet, Rubina (*These rider heroes are good for all troop types)
+- Rangers: Bard, Louis, Lynne, Cedric, Ethan
+- Infantry: Sakura, Adut, Stella, Eileen
+- For New Players: Norah & Liam
+
+Do not use heroes that heal, shield, or have zombie damage bonuses
+X `DMG to zombies` does NOT work on antepede
+X Thunder, Bodala, Tom, Raigoro, Boyd
+X Jaden, Peggy, Martin, Lee, Hank, Peter
+
+Use a beast leader that gives a basic attack damage bonus:
+Example Beasts: Crab, Jellyfish, Bull
+
+For a little extra damage:
+- Use an `attack boost` item
+- Scout a neutral shelter
+
+When joining other rallies:
+- use any hero with the biggest squad size
+- Some heroes increase your max squad size: Freya, Peter, Hank, Claude
+- Try to match your troop type to the rally hero
+
+When you reach 83.5 million points for maximum reward, leave room for others
+- Keep starting your own rallies if there is at least 5 minutes remaining
+- Reduce your troop count to leave room for others
+- Don't fill other strong rallies
