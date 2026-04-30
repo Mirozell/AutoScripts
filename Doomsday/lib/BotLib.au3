@@ -8,7 +8,7 @@ Func Logger($msg, $v1=Null, $v2=Null, $v3=Null, $v4=Null, $v5=Null, $v6=Null, $v
 EndFunc
 
 ; target = [x, y, hexcolor]
-Func MouseClick_Target($target, $tolerance=0, $timeout = 30)
+Func MouseClick_Target($target, $tolerance=0, $timeout = 10)
    $x = $target[0]
    $y = $target[1]
    $expected = $target[2]
@@ -36,7 +36,43 @@ Func MouseClick_Target($target, $tolerance=0, $timeout = 30)
    return $clicked
 EndFunc
 
+Func ResetToRegionView($hwnd, $btn, $interval=1000, $limit=10)
+   ActivateWindow($hwnd)
+   $color = GetPixelHexColor($btn[0], $btn[1], $hwnd)
+   $count = 0
+   While HexDiff($color, $btn[2]) > 0
+	  $count += 1
+	  If $count > $limit Then
+		 Return False
+	  EndIf
+
+	  MouseClick("left", $btn[0], $btn[1])
+	  Sleep($interval)
+	  $color = GetPixelHexColor($btn[0], $btn[1], $hwnd)
+   WEnd
+
+   Return True
+EndFunc
+
+Func ResetToBaseView($hwnd, $btn, $interval=1000, $limit=10)
+   If Not ResetToRegionView($hwnd, $btn, $interval, $limit) Then return False
+   Sleep(100)
+   MouseClick("left", $btn[0], $btn[1])
+   return True
+EndFunc
+
+Func ActivateWindow($hwnd)
+	;Logger("Activate Window: %s", $window)
+	WinActivate($hwnd)
+	$window = WinWaitActive($hwnd, 1)
+	If $window == 0 Then
+		Logger("Window not found")
+		Exit 1
+	EndIf
+EndFunc
+
 Func QuitHandler()
    ConsoleWrite(_NowTime() & " Exiting" & @CRLF)
     Exit 0
 EndFunc
+
