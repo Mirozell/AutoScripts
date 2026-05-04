@@ -140,31 +140,3 @@ Func SendSquad()
    return ""
 EndFunc
 
-Func ResetToRegionView($hwnd, $btn, $interval=1000, $limit=10)
-   ActivateWindow($hwnd)
-   $color = GetPixelHexColor($btn[0], $btn[1], $hwnd)
-   $count = 0
-   While HexDiff($color, $btn[2]) > 0
-	  $count += 1
-	  If $count > $limit Then
-		 Return False
-	  EndIf
-
-	  MouseClick("left", $btn[0], $btn[1])
-	  Sleep($interval)
-	  $color = GetPixelHexColor($btn[0], $btn[1], $hwnd)
-   WEnd
-
-   Return True
-EndFunc
-
-Func ActivateWindow($hwnd)
-	;ConsoleWrite("Activate Window: " & $window & @CRLF)
-	WinActivate($hwnd)
-	$window = WinWaitActive($hwnd, 1)
-	If $window == 0 Then
-		ConsoleWriteError("Window not found")
-		Exit 1
-	EndIf
-EndFunc
-
