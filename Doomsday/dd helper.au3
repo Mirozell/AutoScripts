@@ -10,9 +10,10 @@ AutoItSetOption("MouseClickDownDelay", 30)
 
 ;Local $helpbtn = [550, 510, "DEA342"]
 Local $helpbtn = [680, 640, "DCA23F"]
-Local $wait = 0
-Local $interval = 1
-Local $forceclick = 0
+Local $coveredhelpbtn = [680, 640, "4C3610"]
+Local $inactivehelpbtn = [680, 640, "444544"]
+Local $helpinterval = 500
+Local $nohelpinterval = 2 * 1000
 
 HotKeySet( "{esc}","QuitHandler" )
 $statusWindow = SplashTextOn ( "Doomsday Help Script", "Helping...", 200, 80, 50, 50 )
@@ -28,24 +29,34 @@ While 1=1
 	  WinSetState($window, "", @SW_RESTORE)
 	  ActivateWindow($window)
 
-	  If $forceclick > 9 Then
-		 MouseClick("left", $helpbtn[0], $helpbtn[1])
-		 $forceclick = 0
-	  Else
-		 $clicked = MouseClick_Target($helpbtn, 10)
-		 If $clicked Then
-			Logger("%s: Helped", $i)
-			$forceclick = 0
-		 Else
-			$forceclick += 1
-		 EndIf
+	  ; sleep and skip if help inactive
+	  $color = GetPixelHexColor($inactivehelpbtn[0], $inactivehelpbtn[1])
+	  If HexDiff($inactivehelpbtn[2], $color) < 1 Then
+		 WinSetState($window, "", @SW_MINIMIZE )
+		 Sleep($nohelpinterval)
+		 ContinueLoop
 	  EndIf
-	  Sleep($interval*1000)
-	  WinSetState($window, "", @SW_MINIMIZE )
 
+	  ; try click help
+	  $clicked = MouseClick_Target($helpbtn, 10)
+	  If $clicked Then
+		 Logger("%s: Helped", $i)
+	  Else
+		 ; try recovery from skill popup
+		 MouseClick_Target($coveredhelpbtn, 10)
+		 $clicked = MouseClick_Target($helpbtn, 10)
+		 Logger("%s: Cleared cover and clicked: %s", $i, $clicked)
+	  EndIf
+
+	  If Not $clicked And Random() < .1 Then
+		 ; attempt recovery from unknown
+		 MouseClick("left", $helpbtn[0], $helpbtn[1])
+		 Logger("%s: forced click")
+	  EndIf
+
+	  WinSetState($window, "", @SW_MINIMIZE )
+	  Sleep($helpinterval)
    Next
 
    WinActivate($statusWindow)
-   Sleep($wait * 1000)
-
 WEnd
