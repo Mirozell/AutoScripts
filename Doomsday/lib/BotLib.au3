@@ -26,7 +26,7 @@ Func MouseClick_Target($target, $tolerance=0, $timeout = 10)
 		 $clicked = True
 	  EndIf
 
-	  Sleep(200)
+	  Sleep(100)
    Until $clicked Or _NowCalc() > $timedout
 
    If Not $clicked Then
