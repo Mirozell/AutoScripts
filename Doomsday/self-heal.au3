@@ -14,7 +14,7 @@ $mainwindow = $windows[1][1]
 Logger("Found active windows: %s", $windowcount)
 $statusWindow = SplashTextOn ( "Doomsday Heal Script", "Starting...", 250, 120, 50, 50 )
 
-global $healsize = 700 ; GetHealSize($windowcount-1); + 87
+global $healsize = 720 ; GetHealSize($windowcount-1); + 87
 global $elixerTab = False ; or True
 
 ; target = [x, y, hex color]
@@ -25,6 +25,7 @@ local $healbtn = [1068, 600, "DEA742"]
 local $waitbar = [389, 473, "6AC762"]
 local $helpbtn = [763, 666, "not used"]
 local $shelterbtn = [34, 686, "8D6F4B"]
+local $rsshealbtn = [877, 136, "1B150E"]
 
 local $totalhealed = 0
 local $starttime = _NowCalc()
@@ -32,9 +33,8 @@ local $fails = 0
 local $healed = 0
 
 If $elixerTab Then
-   Logger("fix offset")
-   exit 1
-   $squadbox[1] += 65
+   Logger("Elixer tab active")
+   $squadbox[1] += 25
 EndIf
 
 While True
@@ -56,7 +56,7 @@ While True
    $rate = Round($totalhealed/$elapsed*60, 0)
    Logger("Healed: %s Total: %s Waited: %s  Rate: %s", $healed, $totalhealed, $waited, $rate)
 
-   Sleep(300)
+   Sleep(100)
 Wend
 
 Func GetHealSize($helpcount)
@@ -68,7 +68,7 @@ Func EnterHospital()
 
    ;hospital heal popover
    UpdateStatus("Entering hospital")
-   $entered = MouseClick_Target($hospitalpopup, 35)
+   $entered = MouseClick_Target($hospitalpopup, 40)
    If $entered Then return ""
 
    Logger("  Failed to enter hospital, attempting reset")
@@ -84,7 +84,7 @@ EndFunc
 Func Heal()
    ;prevent elixer heal
    If $elixerTab Then
-	  MouseClick("left", 1330, 220)
+	  MouseClick("left", $rsshealbtn[0], $rsshealbtn[1])
 	  $elixerTab=False
 	  Sleep(500)
    EndIf
@@ -139,13 +139,15 @@ Func WaitAndHelps()
 		 Logger("Helping...")
 		 For $i = 2 To $windowcount
 			local $window = $windows[$i][1]
+			WinSetState($window, "", @SW_RESTORE)
 			ActivateWindow($window)
 			MouseClick("left", $helpbtn[0], $helpbtn[1])
-			Sleep(40) ; help click won't register if this is too short
+			Sleep(20) ; help click won't register if this is too short
+			WinSetState($window, "", @SW_MINIMIZE )
 		 Next
 		 $lasthelp = _NowCalc()
 	  EndIf
-	  sleep(100)
+	  sleep(50)
    WEnd
 EndFunc
 
@@ -155,7 +157,7 @@ Func Collect()
    ;collect
    UpdateStatus("Collecting")
    MouseClick("left", $hospitalpopup[0]+Random(0, 3, 1), $hospitalpopup[1]+Random(0, 3, 1))
-   return $waited
+
 EndFunc
 
 Func CheckForHealComplete($target, $tolerance)
