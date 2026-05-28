@@ -64,7 +64,7 @@ EndFunc
 Func ActivateWindow($hwnd)
 	;Logger("Activate Window: %s", $window)
 	WinActivate($hwnd)
-	$window = WinWaitActive($hwnd, 1)
+	$window = WinWaitActive($hwnd, "", 2)
 	If $window == 0 Then
 		Logger("Window not found")
 		Exit 1
