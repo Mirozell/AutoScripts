@@ -1,19 +1,4 @@
-set interval=30
-
-runas /user:bud202 /savecred doomsday
-timeout /t %interval%
-
-runas /user:bud407 /savecred doomsday
-timeout /t %interval%
-
-runas /user:bud876 /savecred doomsday
-timeout /t %interval%
-
-runas /user:bud906 /savecred doomsday
-timeout /t %interval%
-
-runas /user:bud420 /savecred doomsday
-timeout /t %interval%
+set interval=20
 
 runas /user:oliv1564 /savecred doomsday 
 timeout /t %interval%
@@ -34,4 +19,3 @@ runas /user:oliv9542 /savecred doomsday
 timeout /t %interval%
 
 runas /user:oliv4672 /savecred doomsday
-
