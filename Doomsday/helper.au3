@@ -22,26 +22,33 @@ $windowcount = $windows[0][0]
 ConsoleWrite(_NowTime() & " Found active windows: " & $windowcount & @CRLF)
 
 For $i = 1 To $windowcount
-   Logger("%s: Stacking", $i)
-   $window = $windows[$i][1]
-   ActivateWindow($window)
-   $hwnd = WinMove($window, "", 50, 300)
-   if not $hwnd then Logger("%s: move failed", $i)
+	Logger("%s: Stacking", $i)
+	$window = $windows[$i][1]
+	ActivateWindow($window)
+	$hwnd = WinMove($window, "", 10, 10)
+	if not $hwnd then Logger("%s: move failed", $i)
+	Sleep(30)
+	WinSetState($window, "", @SW_MINIMIZE)
 Next
 
 While 1=1
 
    For $i = 1 To $windowcount
-	  $window = $windows[$i][1]
-	  ActivateWindow($window)
+		$window = $windows[$i][1]
+		ActivateWindow($window)
 
-	  ; sleep and skip if help inactive
-	  $color = GetPixelHexColor($inactivehelpbtn[0], $inactivehelpbtn[1])
-	  If HexDiff($inactivehelpbtn[2], $color) < 1 Then
+		; sleep and skip if help inactive
+		$color = GetPixelHexColor($inactivehelpbtn[0], $inactivehelpbtn[1])
+		If HexDiff($inactivehelpbtn[2], $color) < 1 Then
+		  WinSetState($window, "", @SW_MINIMIZE)
+		  Sleep(2000)
 		 ContinueLoop
-	  EndIf
+		EndIf
 
-	  MouseClick("left", $helpbtn[0], $helpbtn[1])
+		Logger("%s: Helping", $i)
+		MouseClick("left", $helpbtn[0], $helpbtn[1])
+		Sleep(30)
+		WinSetState($window, "", @SW_MINIMIZE)
    Next
 
    Sleep($helpinterval)
