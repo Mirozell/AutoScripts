@@ -1,0 +1,1 @@
+taskkill /im doomsday.exe /f /t
