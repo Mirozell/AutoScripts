@@ -21,7 +21,7 @@ local $wait = 1000*180 ;1000 * $squadsize / 100 * 20
 local $clicktargetwait = 3
 
 ; target = [x, y, hex color]
-local $shelterbtn = [34, 686, "8D6F4B"]
+local $shelterbtn = [48, 698, "FFFAD1"]
 local $searchbtn = [38, 455, "FDFBE9"]
 local $centerfarm = [641, 356]
 local $gatherbtn = [880, 507, "E7B54A"]
@@ -35,7 +35,7 @@ local $farmfood = [550, 590, 550, 480]
 local $farmwood = [720, 590, 720, 480]
 local $farmsteel = [880, 590, 880, 480]
 local $farmoil = [1050, 590, 1050, 480]
-local $farms = [$farmsteel, $farmoil]
+local $farms = [$farmoil, $farmoil]
 
 local $starttime = _NowCalc()
 
