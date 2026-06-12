@@ -1,4 +1,4 @@
-set interval=30
+IF NOT DEFINED interval (set interval=30)
 
 runas /user:bud202 /savecred doomsday
 timeout /t %interval%
@@ -13,3 +13,4 @@ timeout /t %interval%
 runas /user:bud998 /savecred doomsday
 timeout /t %interval%
 runas /user:bud210 /savecred doomsday
+timeout /t %interval%
